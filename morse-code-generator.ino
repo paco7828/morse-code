@@ -1,40 +1,56 @@
-String alphabet = "abcdefghijklmnopqrstuvwxyz";
+String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 String morseAlphabet[] = {
-  "short-long",
-  "long-short-short-short",
-  "long-short-long-short",
-  "long-short-short",
-  "short",
-  "short-short-long-short",
-  "long-long-short",
-  "short-short-short-short",
-  "short-short",
-  "short-long-long-long",
-  "long-short-long",
-  "short-long-short-short",
-  "long-long",
-  "long-short",
-  "long-long-long",
-  "short-long-long-short",
-  "long-long-short-long",
-  "short-long-short",
-  "short-short-short",
-  "long",
-  "short-short-long",
-  "short-short-short-long",
-  "short-long-long",
-  "long-short-short-long",
-  "long-short-long-long",
-  "long-long-short-short"
+  ".-",     // A
+  "-...",   // B
+  "-.-.-",  // C
+  "-..",    // D
+  ".",      // E
+  "..-.",   // F
+  "--.",    // G
+  "....",   // H
+  "..",     // I
+  ".---",   // J
+  "-.-.",   // K
+  ".-..",   // L
+  "--",     // M
+  "-.",     // N
+  "---",    // O
+  ".--.",   // P
+  "--.-",   // Q
+  ".-.",    // R
+  "...",    // S
+  "-",      // T
+  "..-",    // U
+  "...-",   // V
+  ".--",    // W
+  "-..-",   // X
+  "-.--",   // Y
+  "--..",   // Z
+  "-----",  // 0
+  ".----",  // 1
+  "..---",  // 2
+  "...--",  // 3
+  "....-",  // 4
+  ".....",  // 5
+  "-....",  // 6
+  "--...",  // 7
+  "---..",  // 8
+  "----."   // 9
 };
 
+// Settings
+const int unitLength = 300;
+const int dashLength = unitLength * 3;
+const int delayBetweenSymbol = unitLength;
+const int delayBetweenChars = dashLength;
+const int delayBetweenWords = unitLength * 7;
+const int buzzerFrequency = 1000;
 int morseBuzzer = 7;
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("Type your word");
-  Serial.println();
+  Serial.println("Type your content");
   pinMode(morseBuzzer, OUTPUT);
 }
 
@@ -45,15 +61,18 @@ void loop() {
       Serial.println("No word provided");
     } else {
       Serial.println("Entered: " + convertable);
-      convertable.toLowerCase();
+      convertable.toUpperCase();
       for (int i = 0; i < convertable.length(); i++) {
         if (convertable[i] == ' ') {
-          delay(700);
+          Serial.print("_");
+          delay(delayBetweenWords);
         } else {
           int charIndex = alphabet.indexOf(convertable[i]);
-          String morseCharCode = morseAlphabet[charIndex];
-          playMorseCode(morseCharCode);
-          delay(300);
+          if (charIndex >= 0) {
+            String morseCharCode = morseAlphabet[charIndex];
+            playMorseCode(morseCharCode);
+            delay(delayBetweenChars);
+          }
         }
       }
       Serial.println();
@@ -62,29 +81,13 @@ void loop() {
 }
 
 void playMorseCode(String morse) {
-  int startIndex = 0;
-  int endIndex = morse.indexOf("-");
-
-  while (endIndex != -1) {
-    String part = morse.substring(startIndex, endIndex);
-    longOrShort(part);
-    delay(100);
-    startIndex = endIndex + 1;
-    endIndex = morse.indexOf("-", startIndex);
-  }
-  String part = morse.substring(startIndex);
-  longOrShort(part);
-}
-
-void longOrShort(String part) {
-  part.toLowerCase();
-  if (part == "short") {
-    tone(morseBuzzer, 1000, 100);
-    Serial.print(".");
-  } else if (part == "long") {
-    tone(morseBuzzer, 1000, 300);
-    Serial.print("-");
-  } else {
-    Serial.print(" ");
+  for (int i = 0; i < morse.length(); i++) {
+    if (morse[i] == '.') {
+      tone(morseBuzzer, buzzerFrequency, unitLength);
+    } else {
+      tone(morseBuzzer, buzzerFrequency, dashLength);
+    }
+    Serial.print(morse[i]);
+    delay(delayBetweenSymbol);
   }
 }
