@@ -40,11 +40,11 @@ String morseAlphabet[] = {
 };
 
 // Settings
-const int unitLength = 300;
+const int unitLength = 100;
 const int dashLength = unitLength * 3;
-const int delayBetweenSymbol = unitLength;
+const int delayBetweenSymbol = dashLength + unitLength;
 const int delayBetweenChars = dashLength;
-const int delayBetweenWords = unitLength * 7;
+const int delayBetweenWords = 1500;
 const int buzzerFrequency = 1000;
 int morseBuzzer = 7;
 
